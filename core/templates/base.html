@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="style.css" />
+    <title>{% block title %}James' Blog{% endblock %}</title>
+</head>
+
+<body>
+    <header id="sidebar">
+        {% block sidebar %}
+	{% if logged_in %}
+	Welcome, {{ username }}. <a href="{{ url }}">Sign Out</a>
+	<a href="{% url new-post %}">New Post</a>
+	{% else %}
+	Please <a href="{{ url }}">Sign In</a>.
+	{% endif %} 
+        {% endblock %}
+    </header>
+
+    <div id="content">
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>
+

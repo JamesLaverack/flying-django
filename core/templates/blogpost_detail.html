@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<a href="{% url list-posts %}">back</a>
+
+<h1>{{ object.title }}</h1>
+<h2>{{ object.date|date }}</h2>
+{{ object.content }}
+
+<a href="{% url delete-post object.key %}">delete</a>
+{% endblock %}

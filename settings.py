@@ -11,7 +11,7 @@ DEBUG = not APPENGINE_PRODUCTION
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    # ('Your Name', 'your_email@example.com'),
+    ('James Laverack', 'james@jameslaverack.com'),
 )
 
 MANAGERS = ADMINS
@@ -70,11 +70,11 @@ SESSION_ENGINE = "appengine_sessions.backends.cached_db"
 # timezone as the operating system.
 # If running in a Windows environment this must be set to the same as your
 # system time zone.
-TIME_ZONE = 'America/Chicago'
+TIME_ZONE = 'Europe/London'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'en-uk'
 
 SITE_ID = 1
 
@@ -201,3 +201,11 @@ LOGGING = {
 ALLOWED_HOSTS = [
     'djappeng1ne-beta.appspot.com'
 ]
+
+TEMPLATE_CONTEXT_PROCESSORS = ("django.contrib.auth.context_processors.auth",
+                               "django.core.context_processors.debug",
+                               "django.core.context_processors.i18n",
+                               "django.core.context_processors.media",
+                               "django.core.context_processors.static",
+                               "django.contrib.messages.context_processors.messages",
+                               "core.context_processor.user_data")
