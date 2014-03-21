@@ -9,7 +9,9 @@ urlpatterns = patterns('',
                        url(r'new/$', views.BlogPostCreateView.as_view(), name='new-post'),
                        url(r'^(?P<slug>[-_\w]+)/$', views.BlogPostDetailView.as_view(), name='view-post'),
                        url(r'^(?P<slug>[-_\w]+)/edit$', views.BlogPostUpdateView.as_view(), name='edit-post'),
-                       url(r'^(?P<slug>[-_\w]+)/delete$', views.BlogPostDeleteView.as_view(), name='delete-post')
+                       url(r'^(?P<slug>[-_\w]+)/delete$', views.BlogPostDeleteView.as_view(), name='delete-post'),
+                       url(r'comment/(?P<slug>[-_\w]+)/edit$', views.CommentUpdateView.as_view(), name='edit-comment'),
+                       url(r'comment/(?P<slug>[-_\w]+)/delete$', views.CommentDeleteView.as_view(), name='delete-comment'),
 
 )
 

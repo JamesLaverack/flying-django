@@ -5,8 +5,36 @@
 <a href="{% url list-posts %}">back</a>
 
 <h1>{{ object.title }}</h1>
-<h2>{{ object.date|date }}</h2>
+<small>{{ object.date }}</small>
+<p>
 {{ object.content }}
+</p>
 
-<a href="{% url delete-post object.key %}">delete</a>
+<h2>comments</h2>
+{% for comment in object.comments %}
+<p>
+<small>{{ comment.date }}</small>
+<a href="{% url delete-comment comment.key %}">delete</a>
+<a href="{% url edit-comment comment.key %}">edit</a>
+{{ comment.key }}
+<p>
+</p>
+{{ comment.content }}
+</p>
+{% empty %}
+<p>
+No comments yet...
+</p>
+{% endfor %}
+
+<h3>Post a comment</h3>
+{% include "blogpost_comment.html" %}
+
+<h2>actions</h2>
+<p>
+<ul>
+<li><a href="{% url delete-post object.key %}">delete</a></li>
+<li><a href="{% url edit-post object.key %}">edit</a></li>
+</ul>
+</p>
 {% endblock %}
