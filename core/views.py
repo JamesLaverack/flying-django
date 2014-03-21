@@ -105,7 +105,7 @@ class BlogPostCreateView(FormView):
     template_name = "blogpost_form.html"
 
     def form_valid(self, form):
-        if user.get_current_user() is not None:
+        if users.get_current_user() is not None:
             bp = BlogPost(author = users.get_current_user().user_id(),
                           title = form.cleaned_data['title'],
                           content = form.cleaned_data['content'])
