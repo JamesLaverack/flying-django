@@ -3,8 +3,6 @@ from django.conf import settings
 from core import views
 
 urlpatterns = patterns('',
-#                       url(r'^$', views.hello_world, name='hello-world'),
-                       url(r'testlogin/$', views.googlelogin),
                        url(r'^$', views.BlogPostListView.as_view(), name='list-posts'),
                        url(r'new/$', views.BlogPostCreateView.as_view(), name='new-post'),
                        url(r'^(?P<slug>[-_\w]+)/$', views.BlogPostDetailView.as_view(), name='view-post'),
