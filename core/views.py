@@ -1,4 +1,6 @@
 from django.views.generic import TemplateView, ListView, DetailView, FormView, UpdateView, DeleteView
+from django.core.urlresolvers import reverse, reverse_lazy
+from django.utils.functional import lazy
 from django.http import HttpResponse, HttpResponseRedirect
 from google.appengine.api import users
 from .models import BlogPost, Comment
@@ -33,12 +35,14 @@ class BlogPostDetailView(DetailView, FormView):
                     content = form.cleaned_data['content'],
                     blogpost = self.get_object())
         c.put()
-        return HttpResponseRedirect(self.get_success_url())
+        return HttpResponseRedirect(reverse('view-post', args=(self.get_object().key(),)))
 
 class BlogPostDeleteView(DeleteView):
     model = BlogPost
     template_name = "blogpost_confirm_delete.html"
-    success_url = "/"
+
+    def get_success_url(self):
+        return reverse('list-posts')
 
     def get_object(self, queryset = None):
         return self.model.get(self.kwargs.get(self.slug_url_kwarg, None))
@@ -46,7 +50,9 @@ class BlogPostDeleteView(DeleteView):
 class CommentDeleteView(DeleteView):
     model = Comment
     template_name = "comment_confirm_delete.html"
-    success_url = "/"
+
+    def get_success_url(self):
+        return reverse('view-post', args=(self.object.blogpost.key(),))
 
     def get_object(self, queryset = None):
         return self.model.get(self.kwargs.get(self.slug_url_kwarg, None))
@@ -54,7 +60,6 @@ class CommentDeleteView(DeleteView):
 class CommentUpdateView(UpdateView):
     form_class = CommentForm
     template_name = "blogpost_update_form.html"
-    success_url = "/"
     model = Comment
 
     def get_object(self, queryset = None):
@@ -64,25 +69,23 @@ class CommentUpdateView(UpdateView):
         self.object.content = form.cleaned_data['content']
         self.object.put()
 
-        return HttpResponseRedirect('/')
+        return HttpResponseRedirect(reverse('view-post', args = (self.object.blogpost.key(),)))
 
 class BlogPostCreateView(FormView):
     form_class = BlogPostForm
     template_name = "blogpost_form.html"
-    success_url = "/"
 
     def form_valid(self, form):
         bp = BlogPost(author = users.get_current_user().user_id(),
                       title = form.cleaned_data['title'],
                       content = form.cleaned_data['content'])
         bp.put()
-        return HttpResponseRedirect(self.get_success_url())
+        return HttpResponseRedirect(reverse('view-post', args = (bp.key(),)))
         
 
 class BlogPostUpdateView(UpdateView):
     form_class = BlogPostForm
     template_name = "blogpost_update_form.html"
-    success_url = "/"
     model = BlogPost
 
     def get_object(self, queryset = None):
@@ -93,7 +96,7 @@ class BlogPostUpdateView(UpdateView):
         self.object.content = form.cleaned_data['content']
         self.object.put()
 
-        return HttpResponseRedirect('/')
+        return HttpResponseRedirect(reverse('view-post', args = (self.object.key(),)))
 
 class HelloWorld(TemplateView):
     template_name = "hello-world.html"
