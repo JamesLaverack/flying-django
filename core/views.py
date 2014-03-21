@@ -1,7 +1,7 @@
 from django.views.generic import TemplateView, ListView, DetailView, FormView, UpdateView, DeleteView
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.utils.functional import lazy
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
 from google.appengine.api import users
 from .models import BlogPost, Comment
 from .forms import BlogPostForm, CommentForm
@@ -31,11 +31,14 @@ class BlogPostDetailView(DetailView, FormView):
         return self.model.get(self.kwargs.get(self.slug_url_kwarg, None))
 
     def form_valid(self, form):
-        c = Comment(author = users.get_current_user().user_id(),
-                    content = form.cleaned_data['content'],
-                    blogpost = self.get_object())
-        c.put()
-        return HttpResponseRedirect(reverse('view-post', args=(self.get_object().key(),)))
+        if users.get_current_user() is not None:
+            c = Comment(author = users.get_current_user().user_id(),
+                        content = form.cleaned_data['content'],
+                        blogpost = self.get_object())
+            c.put()
+            return HttpResponseRedirect(reverse('view-post', args=(self.get_object().key(),)))
+        else:
+            return HttpResponseForbidden()
 
 class BlogPostDeleteView(DeleteView):
     model = BlogPost
@@ -47,6 +50,15 @@ class BlogPostDeleteView(DeleteView):
     def get_object(self, queryset = None):
         return self.model.get(self.kwargs.get(self.slug_url_kwarg, None))
 
+    def delete(self, request, *args, **kwargs):
+        if (
+            users.get_current_user() is not None and
+            self.get_object().author == users.get_current_user().user_id()
+            ):
+            return super(DeleteView, self).delete(request, *args, **kwargs)
+        else:
+            return HttpResponseForbidden()
+
 class CommentDeleteView(DeleteView):
     model = Comment
     template_name = "comment_confirm_delete.html"
@@ -57,6 +69,16 @@ class CommentDeleteView(DeleteView):
     def get_object(self, queryset = None):
         return self.model.get(self.kwargs.get(self.slug_url_kwarg, None))
 
+    def delete(self, request, *args, **kwargs):
+        if (
+            users.get_current_user() is not None and
+            (self.get_object().author == users.get_current_user().user_id() or
+             self.get_object().blogpost.author == users.get_current_user().user_id())
+            ):
+            return super(DeleteView, self).delete(request, *args, **kwargs)
+        else:
+            return HttpResponseForbidden()
+
 class CommentUpdateView(UpdateView):
     form_class = CommentForm
     template_name = "blogpost_update_form.html"
@@ -66,21 +88,31 @@ class CommentUpdateView(UpdateView):
         return self.model.get(self.kwargs.get(self.slug_url_kwarg, None))
 
     def form_valid(self, form):
-        self.object.content = form.cleaned_data['content']
-        self.object.put()
-
-        return HttpResponseRedirect(reverse('view-post', args = (self.object.blogpost.key(),)))
+        if (
+            users.get_current_user() is not None and
+            (self.get_object().author == users.get_current_user().user_id() or
+             self.get_object().blogpost.author == users.get_current_user().user_id())
+            ):
+            self.object.content = form.cleaned_data['content']
+            self.object.put()
+            
+            return HttpResponseRedirect(reverse('view-post', args = (self.object.blogpost.key(),)))
+        else:
+            return HttpResponceForbidden()
 
 class BlogPostCreateView(FormView):
     form_class = BlogPostForm
     template_name = "blogpost_form.html"
 
     def form_valid(self, form):
-        bp = BlogPost(author = users.get_current_user().user_id(),
-                      title = form.cleaned_data['title'],
-                      content = form.cleaned_data['content'])
-        bp.put()
-        return HttpResponseRedirect(reverse('view-post', args = (bp.key(),)))
+        if user.get_current_user() is not None:
+            bp = BlogPost(author = users.get_current_user().user_id(),
+                          title = form.cleaned_data['title'],
+                          content = form.cleaned_data['content'])
+            bp.put()
+            return HttpResponseRedirect(reverse('view-post', args = (bp.key(),)))
+        else:
+            return HttpResponceForbidden()
         
 
 class BlogPostUpdateView(UpdateView):
@@ -92,8 +124,14 @@ class BlogPostUpdateView(UpdateView):
         return self.model.get(self.kwargs.get(self.slug_url_kwarg, None))
 
     def form_valid(self, form):
-        self.object.title = form.cleaned_data['title']
-        self.object.content = form.cleaned_data['content']
-        self.object.put()
+        if (
+            users.get_current_user() is not None and
+            self.get_object().author == users.get_current_user().user_id()
+            ):
+            self.object.title = form.cleaned_data['title']
+            self.object.content = form.cleaned_data['content']
+            self.object.put()
 
-        return HttpResponseRedirect(reverse('view-post', args = (self.object.key(),)))
+            return HttpResponseRedirect(reverse('view-post', args = (self.object.key(),)))
+        else:
+            return HttpResponceForbidden()

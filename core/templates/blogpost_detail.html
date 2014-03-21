@@ -14,9 +14,14 @@
 {% for comment in object.comments %}
 <p>
 <small>{{ comment.date }}</small>
+{% if logged_in %}
+{% if comment.author == user_id or object.author == user_id %}
 <a href="{% url delete-comment comment.key %}">delete</a>
+{% endif %}
+{% if comment.author == user_id %}
 <a href="{% url edit-comment comment.key %}">edit</a>
-{{ comment.key }}
+{% endif %}
+{% endif %}
 <p>
 </p>
 {{ comment.content }}
@@ -27,9 +32,13 @@ No comments yet...
 </p>
 {% endfor %}
 
+
+{% if logged_in %}
 <h3>Post a comment</h3>
 {% include "blogpost_comment.html" %}
+{% endif %}
 
+{% if logged_in and object.author == user_id %}
 <h2>actions</h2>
 <p>
 <ul>
@@ -37,4 +46,5 @@ No comments yet...
 <li><a href="{% url edit-post object.key %}">edit</a></li>
 </ul>
 </p>
+{% endif %}
 {% endblock %}
