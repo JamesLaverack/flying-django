@@ -1,25 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" href="style.css" />
+    {% load staticfiles %}
+    <link rel="stylesheet" href="{% static "css/bootstrap.min.css" %}" />
+    <link rel="stylesheet" href="{% static "css/custom.css" %}" />
+    
     <title>{% block title %}James' Blog{% endblock %}</title>
 </head>
 
 <body>
-    <header id="sidebar">
-        {% block sidebar %}
-	{% if logged_in %}
-	Welcome, {{ username }}. <a href="{{ url }}">Sign Out</a>
-	<a href="{% url new-post %}">New Post</a>
-	{% else %}
-	Please <a href="{{ url }}">Sign In</a>.
-	{% endif %} 
-        {% endblock %}
-    </header>
 
-    <div id="content">
+    <div class="container">
+      <div class="header row">
+	<div class="col-md-4">
+	  <h3><a href="{% url list-posts %}">James' Blog</a></h3>
+	</div>
+	<div class="col-md-4">
+	{% if logged_in %}
+	Welcome, {{ username }}
+	{% endif %}
+	</div>
+        <div class="col-md-4">
+	  <div class="btn-group pull-right">
+	    {% if logged_in %}
+	    <a class="btn btn-default" href="{{ url }}">Sign Out</a>
+	    <a class="btn btn-primary" href="{% url new-post %}">New Post</a>
+	    {% else %}
+	    <a class="btn btn-primary" href="{{ url }}">Sign In</a>
+	    {% endif %} 
+	  </div>
+	</div>
+
+      </div>
+      
+      <div id="content">
         {% block content %}{% endblock %}
+      </div>
+
     </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="{% static "/js/bootstrap.min.js" %}"></script>
 </body>
 </html>
 
