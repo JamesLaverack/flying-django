@@ -1,50 +1,59 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-<a href="{% url list-posts %}">back</a>
-
-<h1>{{ object.title }}</h1>
-<small>{{ object.date }}</small>
+<p>
+<h1>{{ object.title }} <small>{{ object.date }}</small></h1>
+</p>
 <p>
 {{ object.content }}
 </p>
 
-<h2>comments</h2>
-{% for comment in object.comments %}
-<p>
-<small>{{ comment.date }}</small>
-{% if logged_in %}
-{% if comment.author == user_id or object.author == user_id %}
-<a href="{% url delete-comment comment.key %}">delete</a>
-{% endif %}
-{% if comment.author == user_id %}
-<a href="{% url edit-comment comment.key %}">edit</a>
-{% endif %}
-{% endif %}
-<p>
-</p>
-{{ comment.content }}
-</p>
-{% empty %}
-<p>
-No comments yet...
-</p>
-{% endfor %}
 
+<div class="panel panel-default">
+  <div class="panel-heading">comments</div>
+  <ul class="list-group">
+    {% for comment in object.comments %}
+    <li class="list-group-item">
+      <small>{{ comment.date }}</small>
+      <div class="btn-group pull-right">
+	{% if logged_in %}
+	{% if comment.author == user_id %}
+	<a class="btn btn-warning" href="{% url edit-comment comment.key %}">edit</a>
+	{% endif %}
+	{% if comment.author == user_id or object.author == user_id %}
+	<a class="btn btn-danger" href="{% url delete-comment comment.key %}">delete</a>
+	{% endif %}
+	{% endif %}
+      </div>
+      <br>
+      {{ comment.content }}
+    </li>
+    {% empty %}
+    <li class="list-group-item">
+      No comments yet...
+    </li>
+    {% endfor %}
+  </ul>
 
-{% if logged_in %}
-<h3>Post a comment</h3>
-{% include "blogpost_comment.html" %}
-{% endif %}
+  {% if logged_in %}
+  <div class="panel-body">
+    <h3>Post a comment</h3>
+    {% include "blogpost_comment.html" %}
+  </div>
+  {% endif %}
 
-{% if logged_in and object.author == user_id %}
-<h2>actions</h2>
-<p>
-<ul>
-<li><a href="{% url delete-post object.key %}">delete</a></li>
-<li><a href="{% url edit-post object.key %}">edit</a></li>
-</ul>
-</p>
-{% endif %}
+{% endblock %}
+
+{% block actions %}
+<div class="btn-toolbar" role="toolbar">
+  <div class="btn-group">
+    <a class="btn btn-default" href="{% url list-posts %}">Back</a>
+  </div>
+  {% if logged_in and object.author == user_id %}
+  <div class="btn-group pull-right">
+    <a class="btn btn-warning" href="{% url edit-post object.key %}">Edit Post</a>
+    <a class="btn btn-danger" href="{% url delete-post object.key %}">Delete Post</a>
+  </div>
+  {% endif %}
+</div>
 {% endblock %}

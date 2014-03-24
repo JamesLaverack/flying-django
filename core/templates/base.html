@@ -11,28 +11,27 @@
 <body>
 
     <div class="container">
-      <div class="header row">
-	<div class="col-md-4">
-	  <h3><a href="{% url list-posts %}">James' Blog</a></h3>
-	</div>
-	<div class="col-md-4">
-	{% if logged_in %}
-	Welcome, {{ username }}
-	{% endif %}
-	</div>
-        <div class="col-md-4">
-	  <div class="btn-group pull-right">
-	    {% if logged_in %}
-	    <a class="btn btn-default" href="{{ url }}">Sign Out</a>
-	    <a class="btn btn-primary" href="{% url new-post %}">New Post</a>
-	    {% else %}
-	    <a class="btn btn-primary" href="{{ url }}">Sign In</a>
-	    {% endif %} 
-	  </div>
-	</div>
+      <div class="header">
 
+	<div class="btn-group btn-large pull-right">
+	  {% if logged_in %}
+	  <a class="btn btn-default" href="{{ url }}">Sign Out</a>
+	  <a class="btn btn-primary" href="{% url new-post %}">New Post</a>
+	  {% else %}
+	  <a class="btn btn-primary" href="{{ url }}">Sign In</a>
+	  {% endif %} 
+	</div>
+      <h3><a href="{% url list-posts %}">James' Blog</a>
+      {% if logged_in %}
+      <small>Welcome, {{ username }}</small>
+      {% endif %}
+      </h3>
       </div>
-      
+
+      <div id="actionbar">
+	{% block actions %}{% endblock %}
+      </div>
+
       <div id="content">
         {% block content %}{% endblock %}
       </div>
