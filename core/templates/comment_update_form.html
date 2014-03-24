@@ -2,12 +2,12 @@
 
 {% block content %}
 
-<a href="{% url list-posts %}">back</a>
+<a class="btn btn-default" href="{% url view-post object.blogpost.key %}">Back</a>
 
 <h1>Edit Comment</h1>
 <form action="" method="post">{% csrf_token %}
     {{ form.as_p }}
-    <input type="submit" value="Update" />
+    <input class="btn btn-primary" type="submit" value="Update Comment" />
 </form>
 
 {% endblock %}

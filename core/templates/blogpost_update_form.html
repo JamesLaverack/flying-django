@@ -1,13 +1,14 @@
 {% extends "base.html" %}
 
+{% block actions %}
+<a class="btn btn-default" href="{% url view-post object.key %}">Back</a>
+{% endblock %}
+
 {% block content %}
-
-<a href="{% url list-posts %}">back</a>
-
-<h1>Edit {{ object.title }}</h1>
+<h1>Edit Post</h1>
 <form action="" method="post">{% csrf_token %}
     {{ form.as_p }}
-    <input type="submit" value="Update" />
+    <input class="btn btn-primary" type="submit" value="Update Post" />
 </form>
 
 {% endblock %}

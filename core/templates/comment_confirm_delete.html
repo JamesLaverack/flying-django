@@ -1,5 +1,17 @@
-<form action="" method="post">{% csrf_token %}
-    <p>Are you sure you want to delete this comment?</p>
-    <p>{{ object.content }}</p>
-    <input type="submit" value="Confirm" />
+{% extends "base.html" %}
+
+{% block actions %}
+<div class="btn-group">
+  <a class="btn btn-default" href="{% url view-post object.blogpost.key %}">Back</a>
+</div>
+<form class="btn-group pull-right" action="" method="post">{% csrf_token %}
+  <input class="btn btn-danger" type="submit" value="Delete comment" />
 </form>
+{% endblock %}
+
+{% block content %}
+<p>
+  <h3>Are you sure you want to delete this comment by {{ object.author_name }}?</h3>
+  {{ object.content }}
+</p>
+{% endblock %}

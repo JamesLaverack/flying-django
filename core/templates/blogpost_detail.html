@@ -2,7 +2,8 @@
 
 {% block content %}
 <p>
-<h1>{{ object.title }} <small>{{ object.date }}</small></h1>
+<h1>{{ object.title }} by <small>{{ object.author_name }}</small></h1>
+<h4>on {{ object.date }}</h4>
 </p>
 <p>
 {{ object.content }}
@@ -10,11 +11,10 @@
 
 
 <div class="panel panel-default">
-  <div class="panel-heading">comments</div>
+  <div class="panel-heading">Comments</div>
   <ul class="list-group">
-    {% for comment in object.comments %}
+    {% for comment in comments %}
     <li class="list-group-item">
-      <small>{{ comment.date }}</small>
       <div class="btn-group pull-right">
 	{% if logged_in %}
 	{% if comment.author == user_id %}
@@ -25,8 +25,10 @@
 	{% endif %}
 	{% endif %}
       </div>
-      <br>
+      <div>
       {{ comment.content }}
+      </div>
+      <small>by {{ comment.author_name }} at {{ comment.date }}</small>
     </li>
     {% empty %}
     <li class="list-group-item">

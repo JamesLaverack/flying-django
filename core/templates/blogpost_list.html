@@ -3,11 +3,12 @@
 {% block content %}
 
 <h1>Blog Posts</h1>
-<ul>
+<ul class="list-group">
 {% for post in object_list %}
-    <li><a href="{% url view-post post.key %}">{{ post.title }}</a></li>
-{% empty %}
-    <li>No posts yet. ;_;</li>
+    <li class="list-group-item">
+      <div class="pull-right"><span class="text-muted">{{ post.date|date }}</span></div>
+      <h3><a href="{% url view-post post.key %}">{{ post.title }}</a> <small>by {{ post.author_name }}</small></h3>
+    </li>
 {% endfor %}
 </ul>
 

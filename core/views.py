@@ -11,7 +11,7 @@ class BlogPostListView(ListView):
     template_name = "blogpost_list.html"
 
     def get_queryset(self):
-        return self.model.all()
+        return self.model.all().order("-date")
 
 class BlogPostDetailView(DetailView, FormView):
     form_class = CommentForm
@@ -25,6 +25,7 @@ class BlogPostDetailView(DetailView, FormView):
         form = self.get_form(form_class)
         context = super(DetailView, self).get_context_data(**kwargs)
         context.update(super(FormView, self).get_context_data(form=form, **kwargs))
+        context['comments'] = self.object.comments.order("date")
         return context
 
     def get_object(self, queryset = None):
@@ -33,6 +34,7 @@ class BlogPostDetailView(DetailView, FormView):
     def form_valid(self, form):
         if users.get_current_user() is not None:
             c = Comment(author = users.get_current_user().user_id(),
+                        author_name = users.get_current_user().nickname(),
                         content = form.cleaned_data['content'],
                         blogpost = self.get_object())
             c.put()
@@ -55,6 +57,10 @@ class BlogPostDeleteView(DeleteView):
             users.get_current_user() is not None and
             self.get_object().author == users.get_current_user().user_id()
             ):
+            # Delete all the associated comments when we delete a post
+            for comment in self.get_object().comments:
+                comment.delete()
+            # Call the standard delete function now
             return super(DeleteView, self).delete(request, *args, **kwargs)
         else:
             return HttpResponseForbidden()
@@ -81,7 +87,7 @@ class CommentDeleteView(DeleteView):
 
 class CommentUpdateView(UpdateView):
     form_class = CommentForm
-    template_name = "blogpost_update_form.html"
+    template_name = "comment_update_form.html"
     model = Comment
 
     def get_object(self, queryset = None):
@@ -107,6 +113,7 @@ class BlogPostCreateView(FormView):
     def form_valid(self, form):
         if users.get_current_user() is not None:
             bp = BlogPost(author = users.get_current_user().user_id(),
+                          author_name = users.get_current_user().nickname(),
                           title = form.cleaned_data['title'],
                           content = form.cleaned_data['content'])
             bp.put()
